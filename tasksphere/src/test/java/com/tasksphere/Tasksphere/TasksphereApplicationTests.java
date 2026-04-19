@@ -1,10 +1,10 @@
-package TaskSphere.demo;
+package com.tasksphere.Tasksphere;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class TasksphereApplicationTests {
 
 	@Test
 	void contextLoads() {

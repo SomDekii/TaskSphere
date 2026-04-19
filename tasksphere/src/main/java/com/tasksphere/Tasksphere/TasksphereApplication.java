@@ -1,13 +1,13 @@
-package TaskSphere.demo;
+package com.tasksphere.Tasksphere;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DemoApplication {
+public class TasksphereApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
+		SpringApplication.run(TasksphereApplication.class, args);
 	}
 
 }
