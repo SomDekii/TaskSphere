@@ -1,0 +1,16 @@
+
+> tasksphere-frontend@1.0.0 dev
+> vite --host 127.0.0.1 --port 5173
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m677[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5173[22m/[39m
+[2m12:48:43 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css[22m
+[2m12:48:46 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/layout/AppLayout.jsx, /src/styles/global.css[22m
+[2m12:48:57 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Dashboard.jsx, /src/styles/global.css[22m
+[2m12:49:05 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Tasks.jsx, /src/styles/global.css[22m
+[2m12:49:10 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/TaskDetails.jsx, /src/styles/global.css[22m
+[2m12:49:15 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/tasks/TaskForm.jsx, /src/styles/global.css[22m
+[2m12:49:20 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Notifications.jsx, /src/styles/global.css[22m
+[2m1:14:42 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/global.css, /src/context/AuthContext.jsx, /src/pages/Dashboard.jsx, /src/pages/TaskDetails.jsx, /src/pages/Notifications.jsx, /src/pages/Tasks.jsx, /src/pages/EditTask.jsx, /src/pages/CreateTask.jsx, /src/components/notifications/NotificationBell.jsx[22m
