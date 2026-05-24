@@ -3,7 +3,7 @@ package TaskSphere.demo.service;
 import TaskSphere.demo.entity.NotificationType;
 import TaskSphere.demo.entity.TaskStatus;
 import TaskSphere.demo.repository.TaskRepository;
-import TaskSphere.demo.service.observer.NotificationSubject;
+import TaskSphere.demo.service.observer.TaskEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -12,23 +12,22 @@ import java.time.LocalDateTime;
 @Service
 public class DeadlineReminderService {
     private final TaskRepository taskRepository;
-    private final NotificationSubject notificationSubject;
+    private final TaskEventPublisher taskEventPublisher;
 
     public DeadlineReminderService(TaskRepository taskRepository,
-                                   NotificationSubject notificationSubject) {
+                                   TaskEventPublisher taskEventPublisher) {
         this.taskRepository = taskRepository;
-        this.notificationSubject = notificationSubject;
+        this.taskEventPublisher = taskEventPublisher;
     }
 
     @Scheduled(fixedRate = 300000)
     public void sendDeadlineReminders() {
         LocalDateTime now = LocalDateTime.now();
         taskRepository.findByDeadlineBetweenAndStatusNot(now, now.plusHours(24), TaskStatus.COMPLETED)
-                .forEach(task -> notificationSubject.notifyObservers(
+                .forEach(task -> taskEventPublisher.deadlineApproaching(
                         task.getUserId(),
                         task.getId(),
-                        "Deadline approaching: " + task.getTitle(),
-                        NotificationType.DEADLINE
+                        "Deadline approaching: " + task.getTitle()
                 ));
     }
 }

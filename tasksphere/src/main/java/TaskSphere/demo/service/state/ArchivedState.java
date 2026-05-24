@@ -2,9 +2,9 @@ package TaskSphere.demo.service.state;
 
 import TaskSphere.demo.entity.TaskStatus;
 
-public class CompletedState implements TaskState {
+public class ArchivedState implements TaskState {
     @Override
     public boolean canMoveTo(TaskStatus nextStatus) {
-        return nextStatus == TaskStatus.COMPLETED || nextStatus == TaskStatus.ARCHIVED;
+        return nextStatus == TaskStatus.ARCHIVED;
     }
 }

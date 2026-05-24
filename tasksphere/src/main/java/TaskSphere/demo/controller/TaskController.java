@@ -40,9 +40,10 @@ public class TaskController {
                                        @RequestParam(required = false) String status,
                                        @RequestParam(required = false) String priority,
                                        @RequestParam(required = false) String type,
-                                       @RequestParam(required = false) String sortBy) {
+                                       @RequestParam(required = false) String sortBy,
+                                       @RequestParam(required = false) String assignee) {
         User user = currentUserService.getUser(authentication);
-        return taskService.getTasks(user.getId(), search, status, priority, type, sortBy);
+        return taskService.getTasks(user.getId(), search, status, priority, type, sortBy, assignee);
     }
 
     @GetMapping("/{id}")
