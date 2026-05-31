@@ -2,6 +2,7 @@ const statusStyles = {
   PENDING: "border-amber-200 bg-amber-50 text-amber-700",
   IN_PROGRESS: "border-sky-200 bg-sky-50 text-sky-700",
   COMPLETED: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  ARCHIVED: "border-slate-200 bg-slate-100 text-slate-600",
 };
 
 const priorityStyles = {

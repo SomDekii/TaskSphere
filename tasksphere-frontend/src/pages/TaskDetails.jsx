@@ -25,7 +25,7 @@ export default function TaskDetails() {
             <StatusBadge status={task.status} />
             <PriorityBadge priority={task.priority} />
           </div>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-950">{task.title}</h1>
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-slate-950">{task.title}</h1>
           <p className="mt-3 max-w-none text-sm leading-6 text-slate-600">{task.description || "No description"}</p>
         </div>
         <Link className="ts-focus inline-flex items-center justify-center rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700" to={`/tasks/${task.id}/edit`}>

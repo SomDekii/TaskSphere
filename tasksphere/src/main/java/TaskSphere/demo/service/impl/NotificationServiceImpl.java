@@ -2,8 +2,10 @@ package TaskSphere.demo.service.impl;
 
 import TaskSphere.demo.dto.NotificationResponse;
 import TaskSphere.demo.entity.Notification;
+import TaskSphere.demo.entity.User;
 import TaskSphere.demo.exception.ResourceNotFoundException;
 import TaskSphere.demo.repository.NotificationRepository;
+import TaskSphere.demo.repository.UserRepository;
 import TaskSphere.demo.service.NotificationManager;
 import TaskSphere.demo.service.NotificationService;
 import org.springframework.stereotype.Service;
@@ -15,11 +17,14 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationManager notificationManager;
+    private final UserRepository userRepository;
 
     public NotificationServiceImpl(NotificationRepository notificationRepository,
-                                   NotificationManager notificationManager) {
+                                   NotificationManager notificationManager,
+                                   UserRepository userRepository) {
         this.notificationRepository = notificationRepository;
         this.notificationManager = notificationManager;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -40,6 +45,14 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void delete(String userId, String id) {
         notificationRepository.delete(findUserNotification(userId, id));
+    }
+
+    @Override
+    public void registerPushToken(String userId, String pushToken) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setPushToken(pushToken);
+        userRepository.save(user);
     }
 
     @Override

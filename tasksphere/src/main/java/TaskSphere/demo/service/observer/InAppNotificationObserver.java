@@ -4,7 +4,8 @@ import TaskSphere.demo.entity.Notification;
 import TaskSphere.demo.entity.NotificationType;
 import TaskSphere.demo.repository.NotificationRepository;
 import TaskSphere.demo.service.NotificationManager;
-import TaskSphere.demo.service.adapter.InAppAdapter;
+import TaskSphere.demo.service.adapter.NotificationAdapterRegistry;
+import TaskSphere.demo.service.adapter.NotificationChannel;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -13,27 +14,27 @@ import java.time.LocalDateTime;
 public class InAppNotificationObserver implements Observer {
     private final NotificationRepository notificationRepository;
     private final NotificationManager notificationManager;
-    private final InAppAdapter inAppAdapter;
+    private final NotificationAdapterRegistry notificationAdapterRegistry;
 
     public InAppNotificationObserver(NotificationRepository notificationRepository,
                                      NotificationManager notificationManager,
-                                     InAppAdapter inAppAdapter) {
+                                     NotificationAdapterRegistry notificationAdapterRegistry) {
         this.notificationRepository = notificationRepository;
         this.notificationManager = notificationManager;
-        this.inAppAdapter = inAppAdapter;
+        this.notificationAdapterRegistry = notificationAdapterRegistry;
     }
 
     @Override
-    public void update(String userId, String taskId, String message, NotificationType type) {
+    public void update(TaskEvent event) {
         Notification notification = new Notification();
-        notification.setMessage(message);
-        notification.setType(type);
+        notification.setMessage(event.getMessage());
+        notification.setType(event.getType());
         notification.setReadStatus(false);
         notification.setCreatedAt(LocalDateTime.now());
-        notification.setUserId(userId);
-        notification.setTaskId(taskId);
+        notification.setUserId(event.getUserId());
+        notification.setTaskId(event.getTaskId());
         Notification saved = notificationRepository.save(notification);
-        inAppAdapter.send(userId, message);
-        notificationManager.publish(userId, saved);
+        notificationAdapterRegistry.send(NotificationChannel.IN_APP, event.getUserId(), event.getMessage());
+        notificationManager.publish(event.getUserId(), saved);
     }
 }

@@ -7,7 +7,7 @@ import TaskSphere.demo.dto.TaskResponse;
 import java.util.List;
 
 public interface TaskService {
-    List<TaskResponse> getTasks(String userId, String search, String status, String priority, String type, String sortBy);
+    List<TaskResponse> getTasks(String userId, String search, String status, String priority, String type, String sortBy, String assignee);
     TaskResponse getTask(String userId, String id);
     TaskResponse createTask(String userId, TaskRequest request);
     TaskResponse updateTask(String userId, String id, TaskRequest request);

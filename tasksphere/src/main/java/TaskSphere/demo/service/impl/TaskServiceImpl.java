@@ -5,68 +5,54 @@ import TaskSphere.demo.dto.TaskRequest;
 import TaskSphere.demo.dto.TaskResponse;
 import TaskSphere.demo.entity.NotificationType;
 import TaskSphere.demo.entity.Task;
-import TaskSphere.demo.entity.TaskPriority;
 import TaskSphere.demo.entity.TaskStatus;
-import TaskSphere.demo.entity.TaskType;
 import TaskSphere.demo.exception.BadRequestException;
 import TaskSphere.demo.exception.ResourceNotFoundException;
 import TaskSphere.demo.repository.TaskRepository;
 import TaskSphere.demo.service.TaskService;
 import TaskSphere.demo.service.factory.TaskFactory;
-import TaskSphere.demo.service.observer.NotificationSubject;
-import TaskSphere.demo.service.state.CompletedState;
-import TaskSphere.demo.service.state.InProgressState;
-import TaskSphere.demo.service.state.PendingState;
-import TaskSphere.demo.service.state.TaskState;
-import TaskSphere.demo.service.strategy.CompletedTaskStrategy;
-import TaskSphere.demo.service.strategy.DeadlineSortStrategy;
-import TaskSphere.demo.service.strategy.PendingTaskStrategy;
-import TaskSphere.demo.service.strategy.PrioritySortStrategy;
-import TaskSphere.demo.service.strategy.TaskStrategy;
+import TaskSphere.demo.service.observer.TaskEventPublisher;
+import TaskSphere.demo.service.state.TaskStateFactory;
+import TaskSphere.demo.service.strategy.TaskStrategyRegistry;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskFactory taskFactory;
-    private final NotificationSubject notificationSubject;
+    private final TaskEventPublisher taskEventPublisher;
+    private final TaskStateFactory taskStateFactory;
+    private final TaskStrategyRegistry taskStrategyRegistry;
 
     public TaskServiceImpl(TaskRepository taskRepository,
                            TaskFactory taskFactory,
-                           NotificationSubject notificationSubject) {
+                           TaskEventPublisher taskEventPublisher,
+                           TaskStateFactory taskStateFactory,
+                           TaskStrategyRegistry taskStrategyRegistry) {
         this.taskRepository = taskRepository;
         this.taskFactory = taskFactory;
-        this.notificationSubject = notificationSubject;
+        this.taskEventPublisher = taskEventPublisher;
+        this.taskStateFactory = taskStateFactory;
+        this.taskStrategyRegistry = taskStrategyRegistry;
     }
 
     @Override
-    public List<TaskResponse> getTasks(String userId, String search, String status, String priority, String type, String sortBy) {
+    public List<TaskResponse> getTasks(String userId, String search, String status, String priority, String type, String sortBy, String assignee) {
         List<Task> tasks = search == null || search.isBlank()
                 ? taskRepository.findByUserId(userId)
                 : taskRepository.findByUserIdAndTitleContainingIgnoreCase(userId, search);
 
-        TaskStrategy filterStrategy = filterStrategy(status);
-        if (filterStrategy != null) {
-            tasks = filterStrategy.apply(tasks);
-        } else if (hasText(status)) {
-            TaskStatus selectedStatus = parseStatus(status);
-            tasks = tasks.stream().filter(task -> task.getStatus() == selectedStatus).toList();
-        }
-        if (hasText(priority)) {
-            TaskPriority selectedPriority = parsePriority(priority);
-            tasks = tasks.stream().filter(task -> task.getPriority() == selectedPriority).toList();
-        }
-        if (hasText(type)) {
-            TaskType selectedType = parseType(type);
-            tasks = tasks.stream().filter(task -> task.getTaskType() == selectedType).toList();
-        }
-        TaskStrategy sortStrategy = sortStrategy(sortBy);
-        if (sortStrategy != null) {
-            tasks = sortStrategy.apply(tasks);
-        }
+        tasks = taskStrategyRegistry.applyFilter("status", tasks, status);
+        tasks = taskStrategyRegistry.applyFilter("priority", tasks, priority);
+        tasks = taskStrategyRegistry.applyFilter("type", tasks, type);
+        tasks = taskStrategyRegistry.applyFilter("assignee", tasks, assignee);
+        tasks = taskStrategyRegistry.applySort(sortBy, tasks);
         return tasks.stream().map(TaskResponse::from).toList();
     }
 
@@ -77,25 +63,18 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse createTask(String userId, TaskRequest request) {
+        validateDeadline(request);
         LocalDateTime now = LocalDateTime.now();
-        Task task = new Task();
-        task.setTitle(request.getTitle());
-        task.setDescription(request.getDescription());
-        task.setDeadline(request.getDeadline());
-        task.setPriority(request.getPriority());
-        task.setStatus(request.getStatus() == null ? TaskStatus.PENDING : request.getStatus());
-        task.setTaskType(request.getTaskType());
-        task.setUserId(userId);
-        task.setCreatedAt(now);
-        task.setUpdatedAt(now);
+        Task task = taskFactory.createTask(request, userId, now);
         Task saved = taskRepository.save(task);
         String message = taskFactory.create(saved.getTaskType()).creationMessage(saved.getTitle());
-        notificationSubject.notifyObservers(userId, saved.getId(), message, NotificationType.TASK_CREATED);
+        taskEventPublisher.taskCreated(userId, saved.getId(), message);
         return TaskResponse.from(saved);
     }
 
     @Override
     public TaskResponse updateTask(String userId, String id, TaskRequest request) {
+        validateDeadline(request);
         Task task = findUserTask(userId, id);
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
@@ -104,14 +83,14 @@ public class TaskServiceImpl implements TaskService {
         task.setTaskType(request.getTaskType());
         task.setUpdatedAt(LocalDateTime.now());
         Task saved = taskRepository.save(task);
-        notificationSubject.notifyObservers(userId, saved.getId(), "Task updated: " + saved.getTitle(), NotificationType.TASK_UPDATED);
+        taskEventPublisher.taskStatusUpdated(userId, saved.getId(), "Task updated: " + saved.getTitle(), NotificationType.TASK_UPDATED);
         return TaskResponse.from(saved);
     }
 
     @Override
     public TaskResponse updateStatus(String userId, String id, StatusUpdateRequest request) {
         Task task = findUserTask(userId, id);
-        if (!stateFor(task.getStatus()).canMoveTo(request.getStatus())) {
+        if (!taskStateFactory.from(task.getStatus()).canMoveTo(request.getStatus())) {
             throw new BadRequestException("Invalid task status transition");
         }
         task.setStatus(request.getStatus());
@@ -120,7 +99,7 @@ public class TaskServiceImpl implements TaskService {
         NotificationType type = saved.getStatus() == TaskStatus.COMPLETED
                 ? NotificationType.TASK_COMPLETED
                 : NotificationType.TASK_UPDATED;
-        notificationSubject.notifyObservers(userId, saved.getId(), "Task status changed: " + saved.getTitle(), type);
+        taskEventPublisher.taskStatusUpdated(userId, saved.getId(), "Task status changed: " + saved.getTitle(), type);
         return TaskResponse.from(saved);
     }
 
@@ -135,59 +114,26 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
     }
 
-    private TaskStrategy filterStrategy(String filter) {
-        if ("completed".equalsIgnoreCase(filter)) {
-            return new CompletedTaskStrategy();
+    private void validateDeadline(TaskRequest request) {
+        LocalDateTime deadline = request.getDeadline();
+        if (deadline == null) {
+            return;
         }
-        if ("pending".equalsIgnoreCase(filter)) {
-            return new PendingTaskStrategy();
+
+        if (request.getTimezoneOffsetMinutes() != null) {
+            ZoneOffset userOffset = ZoneOffset.ofTotalSeconds(-request.getTimezoneOffsetMinutes() * 60);
+            Instant selected = deadline.atOffset(userOffset).toInstant().truncatedTo(ChronoUnit.MINUTES);
+            Instant now = Instant.now().truncatedTo(ChronoUnit.MINUTES);
+            if (selected.isBefore(now)) {
+                throw new BadRequestException("Tasks cannot be scheduled in the past.");
+            }
+            return;
         }
-        return null;
-    }
 
-    private TaskStrategy sortStrategy(String sort) {
-        if ("priority".equalsIgnoreCase(sort)) {
-            return new PrioritySortStrategy();
-        }
-        if ("deadline".equalsIgnoreCase(sort)) {
-            return new DeadlineSortStrategy();
-        }
-        return null;
-    }
-
-    private TaskState stateFor(TaskStatus status) {
-        return switch (status) {
-            case PENDING -> new PendingState();
-            case IN_PROGRESS -> new InProgressState();
-            case COMPLETED -> new CompletedState();
-        };
-    }
-
-    private boolean hasText(String value) {
-        return value != null && !value.isBlank();
-    }
-
-    private TaskStatus parseStatus(String value) {
-        try {
-            return TaskStatus.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new BadRequestException("Invalid status filter");
-        }
-    }
-
-    private TaskPriority parsePriority(String value) {
-        try {
-            return TaskPriority.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new BadRequestException("Invalid priority filter");
-        }
-    }
-
-    private TaskType parseType(String value) {
-        try {
-            return TaskType.valueOf(value.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            throw new BadRequestException("Invalid type filter");
+        LocalDateTime selected = deadline.truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        if (selected.isBefore(now)) {
+            throw new BadRequestException("Tasks cannot be scheduled in the past.");
         }
     }
 }

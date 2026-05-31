@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { toDateTimeLocal } from "../../utils/format";
 
+const PAST_DEADLINE_MESSAGE = "Tasks cannot be scheduled in the past.";
+
 const emptyTask = {
   title: "",
   description: "",
@@ -12,6 +14,7 @@ const emptyTask = {
 
 export default function TaskForm({ initialTask, onSubmit, submitting }) {
   const [form, setForm] = useState(emptyTask);
+  const [currentMinute, setCurrentMinute] = useState(() => toCurrentDateTimeLocal());
 
   useEffect(() => {
     if (initialTask) {
@@ -26,13 +29,29 @@ export default function TaskForm({ initialTask, onSubmit, submitting }) {
     }
   }, [initialTask]);
 
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setCurrentMinute(toCurrentDateTimeLocal());
+    }, 30000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const deadlineIsPast = isPastDateTimeLocal(form.deadline);
+
   const update = (event) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   };
 
   const submit = (event) => {
     event.preventDefault();
-    onSubmit({ ...form, deadline: new Date(form.deadline).toISOString() });
+    if (deadlineIsPast) {
+      return;
+    }
+    onSubmit({
+      ...form,
+      deadline: form.deadline,
+      timezoneOffsetMinutes: new Date().getTimezoneOffset(),
+    });
   };
 
   return (
@@ -45,7 +64,12 @@ export default function TaskForm({ initialTask, onSubmit, submitting }) {
           <textarea name="description" value={form.description} onChange={update} rows="5" className={inputClass} placeholder="Add context, scope, or acceptance notes" />
         </Field>
         <Field label="Deadline">
-          <input required type="datetime-local" name="deadline" value={form.deadline} onChange={update} className={inputClass} />
+          <input required type="datetime-local" name="deadline" value={form.deadline} min={currentMinute} onChange={update} className={inputClass} aria-invalid={deadlineIsPast} aria-describedby={deadlineIsPast ? "deadline-error" : undefined} />
+          {deadlineIsPast && (
+            <p id="deadline-error" className="mt-2 text-sm font-medium text-rose-600">
+              {PAST_DEADLINE_MESSAGE}
+            </p>
+          )}
         </Field>
         <Field label="Priority">
           <select name="priority" value={form.priority} onChange={update} className={inputClass}>
@@ -69,7 +93,7 @@ export default function TaskForm({ initialTask, onSubmit, submitting }) {
           </select>
         </Field>
       </div>
-      <button disabled={submitting} className="ts-focus mt-6 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60">
+      <button disabled={submitting || deadlineIsPast} className="ts-focus mt-6 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60">
         {submitting ? "Saving..." : "Save task"}
       </button>
     </form>
@@ -83,6 +107,28 @@ function Field({ label, className = "", children }) {
       <div className="mt-2">{children}</div>
     </label>
   );
+}
+
+function isPastDateTimeLocal(value) {
+  if (!value) {
+    return false;
+  }
+
+  const selected = new Date(value);
+  if (Number.isNaN(selected.getTime())) {
+    return false;
+  }
+
+  selected.setSeconds(0, 0);
+  const now = new Date();
+  now.setSeconds(0, 0);
+  return selected < now;
+}
+
+function toCurrentDateTimeLocal() {
+  const now = new Date();
+  now.setSeconds(0, 0);
+  return toDateTimeLocal(now);
 }
 
 const inputClass = "ts-focus w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 transition placeholder:text-slate-400 hover:border-slate-300";

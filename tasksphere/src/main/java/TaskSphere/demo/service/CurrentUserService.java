@@ -15,7 +15,8 @@ public class CurrentUserService {
     }
 
     public User getUser(Authentication authentication) {
-        return userRepository.findByUsername(authentication.getName())
+        return userRepository.findByEmailIgnoreCase(authentication.getName())
+                .or(() -> userRepository.findByUsername(authentication.getName()))
                 .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
     }
 }

@@ -6,7 +6,7 @@ export default function EmptyState({ title, description, action }) {
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
         <Icon name="tasks" />
       </div>
-      <h2 className="mt-4 text-lg font-semibold text-slate-950">{title}</h2>
+      <h2 className="mt-4 text-base font-semibold text-slate-950">{title}</h2>
       <p className="mt-2 text-sm leading-6 text-slate-500">{description}</p>
       {action && <div className="mt-5">{action}</div>}
     </div>

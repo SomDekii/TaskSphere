@@ -8,10 +8,10 @@ export default function TaskCard({ task, onDelete, onStatus }) {
     <article className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <Link to={`/tasks/${task.id}`} className="line-clamp-1 text-lg font-semibold text-slate-950 transition group-hover:text-sky-700">
+          <Link to={`/tasks/${task.id}`} className="line-clamp-1 text-base font-semibold text-slate-950 transition group-hover:text-sky-700">
             {task.title}
           </Link>
-          <p className="mt-2 line-clamp-2 text-base leading-7 text-slate-500">{task.description || "No description"}</p>
+          <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{task.description || "No description"}</p>
         </div>
         <PriorityBadge priority={task.priority} />
       </div>
@@ -23,7 +23,7 @@ export default function TaskCard({ task, onDelete, onStatus }) {
         </span>
       </div>
 
-      <div className="mt-6 flex items-center gap-2 rounded-xl bg-slate-50 px-4 py-3 text-base text-slate-500">
+      <div className="mt-6 flex items-center gap-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
         <Icon name="calendar" className="h-4 w-4 text-slate-400" />
         Due {formatDateTime(task.deadline)}
       </div>

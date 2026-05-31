@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import NotificationBell from "../notifications/NotificationBell";
 import { useAuth } from "../../context/AuthContext";
 import Icon from "../ui/Icon";
+import logoSrc from "../../assets/TOdo.png";
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: "dashboard" },
@@ -65,7 +66,7 @@ export default function AppLayout() {
                 <Icon name="menu" />
               </button>
               <div className="min-w-0">
-                <h1 className="truncate text-lg font-semibold text-slate-950">
+                <h1 className="truncate text-base font-semibold text-slate-950">
                   {title}
                 </h1>
               </div>
@@ -99,21 +100,13 @@ function Sidebar({ user, onLogout, onNavigate, mobile = false }) {
     <aside
       className={`${mobile ? "flex" : "fixed inset-y-0 left-0 hidden md:flex"} w-[260px] flex-col bg-slate-950 text-white`}
     >
-      <div className="flex h-[120px] flex-col items-center justify-center border-b border-white/10 px-5 text-center">
-        <div
-          className="flex h-20 w-20 items-center justify-center rounded-full bg-sky-500 text-lg font-bold shadow-lg
-  shadow-sky-500/20"
-        >
-          T
-        </div>
-
-        <div>
-          {/* <div className="text-s font-bold tracking-tight">TaskSphere</div> */}
-          {/* <div className="text-xs text-slate-400">Task management</div> */}
+      <div className="flex h-[104px] flex-col items-center justify-center border-b border-white/10 px-5 text-center">
+        <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white/10 p-1 shadow-lg shadow-sky-500/20">
+          <img src={logoSrc} alt="TaskSphere" className="h-full w-full rounded-full object-cover" />
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 px-3 py-5">
+      <nav className="flex-1 space-y-1 px-3 py-3">
         {links.map((link) => (
           <NavLink
             key={link.to}

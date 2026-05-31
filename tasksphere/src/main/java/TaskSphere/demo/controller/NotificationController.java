@@ -1,9 +1,11 @@
 package TaskSphere.demo.controller;
 
 import TaskSphere.demo.dto.NotificationResponse;
+import TaskSphere.demo.dto.PushSubscriptionRequest;
 import TaskSphere.demo.entity.User;
 import TaskSphere.demo.service.CurrentUserService;
 import TaskSphere.demo.service.NotificationService;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -38,6 +42,14 @@ public class NotificationController {
     public SseEmitter stream(Authentication authentication) {
         User user = currentUserService.getUser(authentication);
         return notificationService.stream(user.getId());
+    }
+
+    @PostMapping("/push-subscription")
+    public ResponseEntity<Void> registerPushSubscription(Authentication authentication,
+                                                        @Valid @RequestBody PushSubscriptionRequest request) {
+        User user = currentUserService.getUser(authentication);
+        notificationService.registerPushToken(user.getId(), request.getPushToken());
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/read")

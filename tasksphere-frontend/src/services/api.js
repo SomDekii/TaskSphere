@@ -10,6 +10,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  if (config.url?.startsWith("/auth/")) {
+    return config;
+  }
+
   const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -20,6 +24,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    if (error.response?.status === 401 && !error.config?.url?.startsWith("/auth/")) {
+      clearAuth();
+      window.location.assign("/login");
+    }
+
     const message = error.response?.data?.message || error.message || "Request failed";
     return Promise.reject(new Error(message));
   },
@@ -47,6 +56,7 @@ export const taskApi = {
 export const notificationApi = {
   list: () => api.get("/notifications"),
   markRead: (id) => api.patch(`/notifications/${id}/read`),
+  registerPushSubscription: (pushToken) => api.post("/notifications/push-subscription", { pushToken }),
   remove: (id) => api.delete(`/notifications/${id}`),
   streamUrl: () => `${API_BASE_URL}/notifications/stream?token=${encodeURIComponent(getToken() || "")}`,
 };
