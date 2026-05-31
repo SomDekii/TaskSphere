@@ -17,6 +17,7 @@ public class User {
     private String password;
     private String firstName;
     private String lastName;
+    private String pushToken;
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public String getId() { return id; }
@@ -31,6 +32,8 @@ public class User {
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public String getLastName() { return lastName; }
     public void setLastName(String lastName) { this.lastName = lastName; }
+    public String getPushToken() { return pushToken; }
+    public void setPushToken(String pushToken) { this.pushToken = pushToken; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

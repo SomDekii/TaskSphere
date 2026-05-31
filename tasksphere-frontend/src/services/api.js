@@ -56,6 +56,7 @@ export const taskApi = {
 export const notificationApi = {
   list: () => api.get("/notifications"),
   markRead: (id) => api.patch(`/notifications/${id}/read`),
+  registerPushSubscription: (pushToken) => api.post("/notifications/push-subscription", { pushToken }),
   remove: (id) => api.delete(`/notifications/${id}`),
   streamUrl: () => `${API_BASE_URL}/notifications/stream?token=${encodeURIComponent(getToken() || "")}`,
 };

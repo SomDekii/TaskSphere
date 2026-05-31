@@ -43,7 +43,7 @@ export default function Signup() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb] px-4 py-12 sm:py-16">
       <form onSubmit={submit} className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-slate-950">Create account</h1>
+        <h1 className="text-xl font-bold text-slate-950">Create account</h1>
         <p className="mt-1 text-sm text-slate-500">Start using TaskSphere.</p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="block">

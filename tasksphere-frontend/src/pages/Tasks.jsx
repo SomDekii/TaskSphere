@@ -40,11 +40,11 @@ export default function Tasks() {
         <div>
           {/* <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">Task board</p> */}
           {/* <h1 className="mt-1 text-lg font-bold tracking-tight text-slate-950">My Tasks</h1> */}
-          <p className="mt-3 text-base text-slate-500">Search, filter, and update your work from one responsive board.</p>
+          <p className="mt-3 text-sm text-slate-500">Search, filter, and update your work from one responsive board.</p>
         </div>
         <Link
           to="/tasks/new"
-          className="ts-focus inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800"
+          className="ts-focus inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800"
         >
           <Icon name="plus" className="h-4 w-4" />
           New task
@@ -59,7 +59,7 @@ export default function Tasks() {
               placeholder="Search by title or description"
               value={params.search}
               onChange={(event) => setParams({ ...params, search: event.target.value })}
-              className="ts-focus min-h-[52px] w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-12 pr-4 text-base text-slate-900 transition placeholder:text-slate-400 hover:border-slate-300"
+              className="ts-focus min-h-[52px] w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-12 pr-4 text-sm text-slate-900 transition placeholder:text-slate-400 hover:border-slate-300"
             />
           </label>
 
@@ -89,7 +89,7 @@ export default function Tasks() {
             </FilterSelect>
           </div>
 
-          <button className="ts-focus inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-sky-600 px-6 text-base font-semibold text-white shadow-sm transition hover:bg-sky-700">
+          <button className="ts-focus inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-sky-600 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">
             <Icon name="filter" className="h-4 w-4" />
             Apply
           </button>
@@ -107,7 +107,7 @@ export default function Tasks() {
           title="No tasks found"
           description="Create a task or adjust your filters to bring items back into view."
           action={
-            <Link to="/tasks/new" className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-base font-semibold text-white transition hover:bg-slate-800">
+            <Link to="/tasks/new" className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
               <Icon name="plus" className="h-4 w-4" />
               Create task
             </Link>
@@ -125,7 +125,7 @@ function FilterSelect({ label, value, onChange, children }) {
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="ts-focus min-h-[52px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-base font-medium text-slate-700 transition hover:border-slate-300"
+        className="ts-focus min-h-[52px] w-full rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-medium text-slate-700 transition hover:border-slate-300"
       >
         {children}
       </select>

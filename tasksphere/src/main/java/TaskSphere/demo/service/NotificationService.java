@@ -8,6 +8,7 @@ import java.util.List;
 public interface NotificationService {
     List<NotificationResponse> getNotifications(String userId);
     NotificationResponse markRead(String userId, String id);
+    void registerPushToken(String userId, String pushToken);
     void delete(String userId, String id);
     SseEmitter stream(String userId);
 }

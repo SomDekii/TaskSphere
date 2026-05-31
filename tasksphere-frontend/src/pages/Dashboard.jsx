@@ -69,23 +69,23 @@ export default function Dashboard() {
               <Icon name="calendar" className="h-4 w-4" />
               Today&apos;s workspace
             </div>
-            <h1 className="mt-4 text-lg font-bold tracking-tight text-slate-950 xl:text-2xl">
+            <h1 className="mt-4 text-base font-bold tracking-tight text-slate-950 xl:text-xl">
               Plan, prioritize, and move tasks forward.
             </h1>
-            <p className="mt-4 text-lg leading-8 text-slate-500">
+            <p className="mt-3 text-sm leading-6 text-slate-500">
               Keep deadlines, notifications, and work status visible without
               losing focus.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link
-                className="ts-focus inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800"
+                className="ts-focus inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800"
                 to="/tasks/new"
               >
                 <Icon name="plus" className="h-4 w-4" />
                 New task
               </Link>
               <Link
-                className="ts-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-base font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
+                className="ts-focus inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
                 to="/tasks"
               >
                 <Icon name="board" className="h-4 w-4" />
@@ -95,10 +95,10 @@ export default function Dashboard() {
           </div>
 
           <div className="flex min-w-0 flex-col justify-center rounded-2xl bg-slate-950 p-6 text-white">
-            <div className="text-base font-medium text-slate-400">
+            <div className="text-sm font-medium text-slate-400">
               Completion
             </div>
-            <div className="mt-3 text-5xl font-bold">
+            <div className="mt-3 text-4xl font-bold">
               {completionRate(data)}%
             </div>
             <div className="mt-5 h-3 rounded-full bg-white/10">
@@ -107,7 +107,7 @@ export default function Dashboard() {
                 style={{ width: `${completionRate(data)}%` }}
               />
             </div>
-            <p className="mt-5 text-base leading-7 text-slate-300">
+            <p className="mt-5 text-sm leading-6 text-slate-300">
               Completed tasks compared with your total workload.
             </p>
           </div>
@@ -140,10 +140,10 @@ export default function Dashboard() {
                 className="group flex items-start justify-between gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-5 transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white hover:shadow-sm"
               >
                 <div className="min-w-0">
-                  <div className="truncate text-lg font-semibold text-slate-950 group-hover:text-sky-700">
+                  <div className="truncate text-base font-semibold text-slate-950 group-hover:text-sky-700">
                     {task.title}
                   </div>
-                  <div className="mt-2 flex items-center gap-2 text-base text-slate-500">
+                  <div className="mt-2 flex items-center gap-2 text-sm text-slate-500">
                     <Icon name="calendar" className="h-4 w-4" />
                     {formatDateTime(task.deadline)}
                   </div>
@@ -180,10 +180,10 @@ export default function Dashboard() {
                 key={item.id}
                 className="rounded-2xl border border-slate-100 bg-slate-50 p-5"
               >
-                <div className="text-lg font-semibold text-slate-950">
+                <div className="text-base font-semibold text-slate-950">
                   {item.message}
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-base text-slate-500">
+                <div className="mt-2 flex items-center gap-2 text-sm text-slate-500">
                   <Icon name="bell" className="h-4 w-4" />
                   {formatDateTime(item.createdAt)}
                 </div>
@@ -209,8 +209,8 @@ function StatCard({ label, value }) {
     <div className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <div className="text-base font-medium text-slate-500">{label}</div>
-          <div className="mt-3 text-4xl font-bold tracking-tight text-slate-950">
+          <div className="text-sm font-medium text-slate-500">{label}</div>
+          <div className="mt-3 text-3xl font-bold tracking-tight text-slate-950">
             {value}
           </div>
         </div>
@@ -228,7 +228,7 @@ function Panel({ title, action, children }) {
   return (
     <section className="w-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
       <div className="mb-5 flex items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold text-slate-950">{title}</h2>
+        <h2 className="text-lg font-semibold text-slate-950">{title}</h2>
         {action}
       </div>
       {children}
