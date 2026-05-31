@@ -19,6 +19,7 @@ public class TaskRequest {
     private TaskStatus status;
     @NotNull
     private TaskType taskType;
+    private Integer timezoneOffsetMinutes;
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -32,4 +33,6 @@ public class TaskRequest {
     public void setStatus(TaskStatus status) { this.status = status; }
     public TaskType getTaskType() { return taskType; }
     public void setTaskType(TaskType taskType) { this.taskType = taskType; }
+    public Integer getTimezoneOffsetMinutes() { return timezoneOffsetMinutes; }
+    public void setTimezoneOffsetMinutes(Integer timezoneOffsetMinutes) { this.timezoneOffsetMinutes = timezoneOffsetMinutes; }
 }

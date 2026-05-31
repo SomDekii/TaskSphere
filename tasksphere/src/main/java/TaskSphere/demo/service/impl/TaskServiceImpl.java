@@ -16,7 +16,10 @@ import TaskSphere.demo.service.state.TaskStateFactory;
 import TaskSphere.demo.service.strategy.TaskStrategyRegistry;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -60,6 +63,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse createTask(String userId, TaskRequest request) {
+        validateDeadline(request);
         LocalDateTime now = LocalDateTime.now();
         Task task = taskFactory.createTask(request, userId, now);
         Task saved = taskRepository.save(task);
@@ -70,6 +74,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponse updateTask(String userId, String id, TaskRequest request) {
+        validateDeadline(request);
         Task task = findUserTask(userId, id);
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
@@ -109,4 +114,26 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
     }
 
+    private void validateDeadline(TaskRequest request) {
+        LocalDateTime deadline = request.getDeadline();
+        if (deadline == null) {
+            return;
+        }
+
+        if (request.getTimezoneOffsetMinutes() != null) {
+            ZoneOffset userOffset = ZoneOffset.ofTotalSeconds(-request.getTimezoneOffsetMinutes() * 60);
+            Instant selected = deadline.atOffset(userOffset).toInstant().truncatedTo(ChronoUnit.MINUTES);
+            Instant now = Instant.now().truncatedTo(ChronoUnit.MINUTES);
+            if (selected.isBefore(now)) {
+                throw new BadRequestException("Tasks cannot be scheduled in the past.");
+            }
+            return;
+        }
+
+        LocalDateTime selected = deadline.truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        if (selected.isBefore(now)) {
+            throw new BadRequestException("Tasks cannot be scheduled in the past.");
+        }
+    }
 }
