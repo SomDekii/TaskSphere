@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
+import logoSrc from "../assets/TOdo.png";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -24,10 +25,13 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f4f7fb] px-4 py-12 sm:py-16">
+    <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 sm:py-16">
       <form onSubmit={submit} className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="text-xl font-bold text-slate-950">Welcome back</h1>
-        <p className="mt-1 text-sm text-slate-500">Sign in to TaskSphere.</p>
+        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-sky-600 p-1 shadow-md">
+          <img src={logoSrc} alt="TaskSphere" className="h-full w-full rounded-full object-cover" />
+        </div>
+        <h1 className="text-center text-xl font-bold text-slate-950">Welcome back</h1>
+        <p className="mt-1 text-center text-sm text-slate-500">Sign in to TaskSphere.</p>
         <label className="mt-6 block">
           <span className="text-sm font-medium text-slate-700">Email address</span>
           <input
