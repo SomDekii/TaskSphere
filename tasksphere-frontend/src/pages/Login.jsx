@@ -27,7 +27,7 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 sm:py-16">
       <form onSubmit={submit} className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-sky-600 p-1 shadow-md">
+        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-slate-950 p-1 shadow-md">
           <img src={logoSrc} alt="TaskSphere" className="h-full w-full rounded-full object-cover" />
         </div>
         <h1 className="text-center text-xl font-bold text-slate-950">Welcome back</h1>

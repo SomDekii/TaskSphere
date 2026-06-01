@@ -34,10 +34,7 @@ export default function EditTask() {
   return (
     <div className="page-stack">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-400">
-          Task details
-        </p>
-        <h1 className="mt-1 text-base font-bold tracking-tight text-slate-950">
+        <h1 className="mt-1 text-base font-light tracking-tight text-slate-950">
           Edit task
         </h1>
       </div>
